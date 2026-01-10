@@ -3,7 +3,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 // Icons
-import { FaReact, FaLaravel, FaNodeJs, FaGitAlt, FaHtml5, FaCss3Alt } from 'react-icons/fa';
+import { FaReact, FaLaravel, FaNodeJs, FaGitAlt, FaHtml5, FaCss3Alt, FaJava, FaPython } from 'react-icons/fa';
 import { 
   SiNextdotjs, 
   SiTailwindcss, 
@@ -12,28 +12,48 @@ import {
   SiCloudways, 
   SiNetlify, 
   SiVercel, 
-  SiPostman 
+  SiPostman,
+  SiMysql,
+  SiMongodb,
+  SiC,
+  SiCplusplus
 } from 'react-icons/si';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Note: We use "group-hover:text-..." to ensure the color only appears on hover.
+// 1. Categorized Data
 const skills = [
-  { name: "JavaScript", icon: <SiJavascript />, color: "group-hover:text-yellow-400" },
-  { name: "Next.js", icon: <SiNextdotjs />, color: "group-hover:text-white" },
-  { name: "React", icon: <FaReact />, color: "group-hover:text-cyan-400" },
-  { name: "Laravel", icon: <FaLaravel />, color: "group-hover:text-red-600" },
-  { name: "Tailwind", icon: <SiTailwindcss />, color: "group-hover:text-cyan-300" },
-  { name: "HTML5", icon: <FaHtml5 />, color: "group-hover:text-orange-600" },
-  { name: "CSS3", icon: <FaCss3Alt />, color: "group-hover:text-blue-500" },
-  { name: "Node.js", icon: <FaNodeJs />, color: "group-hover:text-green-500" },
-  { name: "GSAP", icon: <SiGreensock />, color: "group-hover:text-green-400" },
-  { name: "Git", icon: <FaGitAlt />, color: "group-hover:text-orange-500" },
-  { name: "Vercel", icon: <SiVercel />, color: "group-hover:text-white" },
-  { name: "Netlify", icon: <SiNetlify />, color: "group-hover:text-teal-400" },
-  { name: "Cloudways", icon: <SiCloudways />, color: "group-hover:text-indigo-400" },
-  { name: "Postman", icon: <SiPostman />, color: "group-hover:text-orange-500" },
+  // Languages
+  { name: "JavaScript", category: "Languages", icon: <SiJavascript />, color: "group-hover:text-yellow-400" },
+  { name: "HTML5", category: "Languages", icon: <FaHtml5 />, color: "group-hover:text-orange-600" },
+  { name: "CSS3", category: "Languages", icon: <FaCss3Alt />, color: "group-hover:text-blue-500" },
+  { name: "Java", category: "Languages", icon: <FaJava />, color: "group-hover:text-red-500" },
+  { name: "Python", category: "Languages", icon: <FaPython />, color: "group-hover:text-yellow-300" },
+  { name: "C", category: "Languages", icon: <SiC />, color: "group-hover:text-blue-500" },
+  { name: "C++", category: "Languages", icon: <SiCplusplus />, color: "group-hover:text-blue-600" },
+
+  // Frameworks
+  { name: "Next.js", category: "Frameworks", icon: <SiNextdotjs />, color: "group-hover:text-white" },
+  { name: "React", category: "Frameworks", icon: <FaReact />, color: "group-hover:text-cyan-400" },
+  { name: "Laravel", category: "Frameworks", icon: <FaLaravel />, color: "group-hover:text-red-600" },
+  { name: "Node.js", category: "Frameworks", icon: <FaNodeJs />, color: "group-hover:text-green-500" }, // Node often fits nicely here or in tools
+  { name: "Tailwind", category: "Frameworks", icon: <SiTailwindcss />, color: "group-hover:text-cyan-300" },
+  { name: "GSAP", category: "Frameworks", icon: <SiGreensock />, color: "group-hover:text-green-400" },
+
+  // Databases (New Category)
+  { name: "MySQL", category: "Databases", icon: <SiMysql />, color: "group-hover:text-blue-500" },
+  { name: "MongoDB", category: "Databases", icon: <SiMongodb />, color: "group-hover:text-green-500" },
+
+  // Cloud & Tools
+  { name: "Git", category: "Cloud & Tools", icon: <FaGitAlt />, color: "group-hover:text-orange-500" },
+  { name: "Vercel", category: "Cloud & Tools", icon: <SiVercel />, color: "group-hover:text-white" },
+  { name: "Netlify", category: "Cloud & Tools", icon: <SiNetlify />, color: "group-hover:text-teal-400" },
+  { name: "Cloudways", category: "Cloud & Tools", icon: <SiCloudways />, color: "group-hover:text-indigo-400" },
+  { name: "Postman", category: "Cloud & Tools", icon: <SiPostman />, color: "group-hover:text-orange-500" },
 ];
+
+// Added "Databases" to the list
+const categories = ["Languages", "Frameworks", "Databases", "Cloud & Tools"];
 
 const SpotlightTile = ({ children, className = "" }) => {
   const divRef = useRef(null);
@@ -72,10 +92,14 @@ const SpotlightTile = ({ children, className = "" }) => {
 function Skills() {
   const containerRef = useRef(null);
   const headerRef = useRef(null);
+  const [activeTab, setActiveTab] = useState("Languages");
 
+  // Filter skills based on active tab
+  const filteredSkills = skills.filter(skill => skill.category === activeTab);
+
+  // Initial Header Animation
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Header Animation
       gsap.from(headerRef.current, {
         y: 40,
         opacity: 0,
@@ -86,54 +110,73 @@ function Skills() {
           start: "top 85%",
         },
       });
-
-      // Grid Animation
-      gsap.from(".skill-tile", {
-        y: 60,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.05,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 75%",
-        },
-      });
     }, containerRef);
-
     return () => ctx.revert();
   }, []);
+
+  // Grid Re-animation when Tab Changes
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Clear any existing animations on the tiles to prevent conflict
+      gsap.killTweensOf(".skill-tile");
+      
+      gsap.fromTo(
+        ".skill-tile",
+        { y: 20, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.4,
+          stagger: 0.05,
+          ease: "power2.out",
+        }
+      );
+    }, containerRef);
+    return () => ctx.revert();
+  }, [activeTab]);
 
   return (
     <section className="bg-neutral-950 py-24" ref={containerRef}>
       <div className="container mx-auto max-w-6xl px-4">
         
         {/* Header */}
-        <div ref={headerRef} className="mb-16 flex flex-col items-center text-center">
+        <div ref={headerRef} className="mb-12 flex flex-col items-center text-center">
           <h2 className="text-3xl font-bold text-white md:text-5xl">
             Technologies
           </h2>
           <div className="mt-2 h-1 w-20 rounded-full bg-indigo-500"></div>
           <p className="mt-4 max-w-2xl text-lg text-neutral-400">
-            A curated stack of tools for building scalable, high-performance applications.
+            My technical proficiency across different domains.
           </p>
         </div>
 
-        {/* Skills Grid */}
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {skills.map((skill, index) => (
+        {/* Tab Navigation */}
+        <div className="mb-10 flex flex-wrap justify-center gap-4">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setActiveTab(cat)}
+              className={`relative rounded-full px-6 py-2 text-sm font-medium transition-all duration-300 ${
+                activeTab === cat
+                  ? "bg-neutral-800 text-white shadow-[0_0_15px_rgba(99,102,241,0.3)] ring-1 ring-indigo-500"
+                  : "bg-transparent text-neutral-500 hover:bg-neutral-900 hover:text-neutral-300"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        {/* Dynamic Grid */}
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 min-h-[300px]">
+          {filteredSkills.map((skill, index) => (
             <div 
-              key={index} 
-              // 'group' is essential here to trigger the hover effect on children
+              key={`${skill.name}-${index}`}
               className="skill-tile aspect-square group cursor-pointer"
             >
               <SpotlightTile className="flex flex-col items-center justify-center p-6 text-center transition-all duration-300 hover:border-neutral-700 hover:bg-neutral-900/80">
                 
-                {/* Icon Wrapper 
-                   1. text-neutral-600: Default grey color
-                   2. skill.color: Contains 'group-hover:text-...' which overrides grey on hover
-                   3. transition-colors: Makes the color change smooth
-                */}
+                {/* Icon Wrapper */}
                 <div 
                   className={`mb-4 text-5xl text-neutral-600 transition-all duration-300 group-hover:scale-110 ${skill.color} group-hover:drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]`}
                 >
