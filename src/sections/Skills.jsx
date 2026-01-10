@@ -36,11 +36,11 @@ const skills = [
   { name: "Next.js", category: "Frameworks", icon: <SiNextdotjs />, color: "group-hover:text-white" },
   { name: "React", category: "Frameworks", icon: <FaReact />, color: "group-hover:text-cyan-400" },
   { name: "Laravel", category: "Frameworks", icon: <FaLaravel />, color: "group-hover:text-red-600" },
-  { name: "Node.js", category: "Frameworks", icon: <FaNodeJs />, color: "group-hover:text-green-500" }, // Node often fits nicely here or in tools
+  { name: "Node.js", category: "Frameworks", icon: <FaNodeJs />, color: "group-hover:text-green-500" },
   { name: "Tailwind", category: "Frameworks", icon: <SiTailwindcss />, color: "group-hover:text-cyan-300" },
   { name: "GSAP", category: "Frameworks", icon: <SiGreensock />, color: "group-hover:text-green-400" },
 
-  // Databases (New Category)
+  // Databases
   { name: "MySQL", category: "Databases", icon: <SiMysql />, color: "group-hover:text-blue-500" },
   { name: "MongoDB", category: "Databases", icon: <SiMongodb />, color: "group-hover:text-green-500" },
 
@@ -48,11 +48,10 @@ const skills = [
   { name: "Git", category: "Cloud & Tools", icon: <FaGitAlt />, color: "group-hover:text-orange-500" },
   { name: "Vercel", category: "Cloud & Tools", icon: <SiVercel />, color: "group-hover:text-white" },
   { name: "Netlify", category: "Cloud & Tools", icon: <SiNetlify />, color: "group-hover:text-teal-400" },
-  { name: "Cloudways", category: "Cloud & Tools", icon: <SiCloudways />, color: "group-hover:text-indigo-400" },
+  { name: "Cloudways", category: "Cloud & Tools", icon: <SiCloudways />, color: "group-hover:text-indigo-400" }, // Keeping brand color
   { name: "Postman", category: "Cloud & Tools", icon: <SiPostman />, color: "group-hover:text-orange-500" },
 ];
 
-// Added "Databases" to the list
 const categories = ["Languages", "Frameworks", "Databases", "Cloud & Tools"];
 
 const SpotlightTile = ({ children, className = "" }) => {
@@ -81,7 +80,8 @@ const SpotlightTile = ({ children, className = "" }) => {
         className="pointer-events-none absolute -inset-px opacity-0 transition duration-300"
         style={{
           opacity,
-          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(255,255,255,0.06), transparent 40%)`,
+          // Updated to a subtle Cyan spotlight gradient
+          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(0, 255, 245, 0.08), transparent 40%)`,
         }}
       />
       <div className="relative z-10 h-full">{children}</div>
@@ -94,10 +94,8 @@ function Skills() {
   const headerRef = useRef(null);
   const [activeTab, setActiveTab] = useState("Languages");
 
-  // Filter skills based on active tab
   const filteredSkills = skills.filter(skill => skill.category === activeTab);
 
-  // Initial Header Animation
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.from(headerRef.current, {
@@ -114,12 +112,9 @@ function Skills() {
     return () => ctx.revert();
   }, []);
 
-  // Grid Re-animation when Tab Changes
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Clear any existing animations on the tiles to prevent conflict
       gsap.killTweensOf(".skill-tile");
-      
       gsap.fromTo(
         ".skill-tile",
         { y: 20, opacity: 0 },
@@ -144,7 +139,8 @@ function Skills() {
           <h2 className="text-3xl font-bold text-white md:text-5xl">
             Technologies
           </h2>
-          <div className="mt-2 h-1 w-20 rounded-full bg-indigo-500"></div>
+          {/* Updated Underline to Cyan */}
+          <div className="mt-2 h-1 w-20 rounded-full bg-[#00FFF5]"></div>
           <p className="mt-4 max-w-2xl text-lg text-neutral-400">
             My technical proficiency across different domains.
           </p>
@@ -158,7 +154,8 @@ function Skills() {
               onClick={() => setActiveTab(cat)}
               className={`relative rounded-full px-6 py-2 text-sm font-medium transition-all duration-300 ${
                 activeTab === cat
-                  ? "bg-neutral-800 text-white shadow-[0_0_15px_rgba(99,102,241,0.3)] ring-1 ring-indigo-500"
+                  // Updated Active State to Cyan Ring & Shadow
+                  ? "bg-neutral-800 text-white shadow-[0_0_15px_rgba(0,255,245,0.3)] ring-1 ring-[#00FFF5]"
                   : "bg-transparent text-neutral-500 hover:bg-neutral-900 hover:text-neutral-300"
               }`}
             >
