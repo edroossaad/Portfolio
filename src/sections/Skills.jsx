@@ -4,14 +4,14 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 // Icons
 import { FaReact, FaLaravel, FaNodeJs, FaGitAlt, FaHtml5, FaCss3Alt, FaJava, FaPython } from 'react-icons/fa';
-import { 
-  SiNextdotjs, 
-  SiTailwindcss, 
-  SiJavascript, 
-  SiGreensock, 
-  SiCloudways, 
-  SiNetlify, 
-  SiVercel, 
+import {
+  SiNextdotjs,
+  SiTailwindcss,
+  SiJavascript,
+  SiGreensock,
+  SiCloudways,
+  SiNetlify,
+  SiVercel,
   SiPostman,
   SiMysql,
   SiMongodb,
@@ -133,7 +133,7 @@ function Skills() {
   return (
     <section className="bg-neutral-950 py-24" ref={containerRef}>
       <div className="container mx-auto max-w-6xl px-4">
-        
+
         {/* Header */}
         <div ref={headerRef} className="mb-12 flex flex-col items-center text-center">
           <h2 className="text-3xl font-bold text-white md:text-5xl">
@@ -152,12 +152,11 @@ function Skills() {
             <button
               key={cat}
               onClick={() => setActiveTab(cat)}
-              className={`relative rounded-full px-6 py-2 text-sm font-medium transition-all duration-300 ${
-                activeTab === cat
+              className={`relative rounded-full px-6 py-2 text-sm font-medium transition-all duration-300 ${activeTab === cat
                   // Updated Active State to Cyan Ring & Shadow
                   ? "bg-neutral-800 text-white shadow-[0_0_15px_rgba(0,255,245,0.3)] ring-1 ring-[#00FFF5]"
                   : "bg-transparent text-neutral-500 hover:bg-neutral-900 hover:text-neutral-300"
-              }`}
+                }`}
             >
               {cat}
             </button>
@@ -167,14 +166,14 @@ function Skills() {
         {/* Dynamic Grid */}
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 min-h-[300px]">
           {filteredSkills.map((skill, index) => (
-            <div 
+            <div
               key={`${skill.name}-${index}`}
               className="skill-tile aspect-square group cursor-pointer"
             >
               <SpotlightTile className="flex flex-col items-center justify-center p-6 text-center transition-all duration-300 hover:border-neutral-700 hover:bg-neutral-900/80">
-                
+
                 {/* Icon Wrapper */}
-                <div 
+                <div
                   className={`mb-4 text-5xl text-neutral-600 transition-all duration-300 group-hover:scale-110 ${skill.color} group-hover:drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]`}
                 >
                   {skill.icon}
@@ -183,7 +182,7 @@ function Skills() {
                 <h3 className="text-base font-medium tracking-wide text-neutral-400 transition-colors duration-300 group-hover:text-white">
                   {skill.name}
                 </h3>
-                
+
               </SpotlightTile>
             </div>
           ))}
