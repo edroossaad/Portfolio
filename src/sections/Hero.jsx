@@ -270,7 +270,7 @@ const RoleCycler = () => {
   useEffect(() => {
     const t = setInterval(() => setIdx((i) => (i + 1) % roles.length), 2800);
     return () => clearInterval(t);
-  }, []);
+  }, [roles.length]);
 
   return (
     <div className="relative h-10 overflow-hidden">
