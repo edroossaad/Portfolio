@@ -1,6 +1,151 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, useScroll, useTransform, useSpring, AnimatePresence } from "framer-motion";
 import { Github, Linkedin, Twitter, ArrowUpRight, Download, Code2, Layers, Zap } from "lucide-react";
+
+// ── Scratch-off Frosted Glass Overlay ──────────────────────────────────────
+const ScratchOffOverlay = () => {
+  const canvasRef = useRef(null);
+  const [complete, setComplete] = useState(false);
+  const [removed, setRemoved] = useState(false);
+
+  useEffect(() => {
+    if (complete) return;
+    const timeout = setTimeout(() => {
+      setComplete(true);
+    }, 12000); // Fallback: auto-reveal after 12s so mobile users don't get trapped if they just want to scroll
+    return () => clearTimeout(timeout);
+  }, [complete]);
+
+  useEffect(() => {
+    if (complete || removed) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+
+    const initCanvas = () => {
+      canvas.width = canvas.offsetWidth || window.innerWidth;
+      canvas.height = canvas.offsetHeight || window.innerHeight;
+
+      // Cinematic noisy frosted layer matching hero background
+      ctx.fillStyle = "#05061a";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Digital Grid
+      ctx.strokeStyle = "rgba(129, 140, 248, 0.08)";
+      ctx.lineWidth = 1;
+      for (let x = 0; x < canvas.width; x += 40) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+      }
+      for (let y = 0; y < canvas.height; y += 40) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+      }
+
+      // Add noise
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imgData.data;
+      for (let i = 0; i < data.length; i += 4) {
+        if (Math.random() > 0.6) {
+          const noise = Math.random() * 20;
+          data[i] = Math.min(255, data[i] + noise);
+          data[i + 1] = Math.min(255, data[i + 1] + noise);
+          data[i + 2] = Math.min(255, data[i + 2] + noise);
+        }
+      }
+      ctx.putImageData(imgData, 0, 0);
+
+      // Central Prompt
+      ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+      ctx.font = "600 20px Inter, monospace";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("W I P E   T O   R E V E A L", canvas.width / 2, canvas.height / 2 - 20);
+    };
+
+    initCanvas();
+    window.addEventListener("resize", initCanvas);
+    return () => window.removeEventListener("resize", initCanvas);
+  }, [complete, removed]);
+
+  const lastPos = useRef({ x: null, y: null });
+  const drawFrames = useRef(0);
+
+  const handlePointerMove = useCallback((e) => {
+    if (complete || removed) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    if (lastPos.current.x === null || lastPos.current.y === null) {
+      lastPos.current.x = x;
+      lastPos.current.y = y;
+      return;
+    }
+
+    ctx.globalCompositeOperation = "destination-out";
+
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.lineWidth = window.innerWidth > 768 ? 200 : 120;
+
+    ctx.shadowBlur = 40;
+    ctx.shadowColor = "rgba(0,0,0,1)";
+
+    ctx.beginPath();
+    ctx.moveTo(lastPos.current.x, lastPos.current.y);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+
+    lastPos.current.x = x;
+    lastPos.current.y = y;
+
+    drawFrames.current += 1;
+    if (drawFrames.current > 15) {
+      drawFrames.current = 0;
+      const stride = 64;
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imgData.data;
+      let clearCount = 0;
+      let totalCount = 0;
+
+      for (let i = 3; i < data.length; i += 4 * stride) {
+        if (data[i] < 128) clearCount++;
+        totalCount++;
+      }
+
+      if (clearCount / totalCount > 0.25) {
+        setComplete(true);
+      }
+    }
+  }, [complete, removed]);
+
+  const handlePointerLeave = () => {
+    lastPos.current = { x: null, y: null };
+  };
+
+  if (removed) return null;
+
+  return (
+    <motion.canvas
+      ref={canvasRef}
+      onPointerMove={handlePointerMove}
+      onPointerLeave={handlePointerLeave}
+      onPointerDown={handlePointerMove}
+      initial={{ opacity: 1, filter: "blur(0px)" }}
+      animate={{
+        opacity: complete ? 0 : 1,
+        filter: complete ? "blur(20px)" : "blur(0px)"
+      }}
+      transition={{ duration: 1.5, ease: "easeInOut" }}
+      onAnimationComplete={() => complete && setRemoved(true)}
+      style={{ touchAction: "none" }}
+      className={`fixed inset-0 w-full h-full z-50 pointer-events-auto ${complete ? '!pointer-events-none' : ''}`}
+    />
+  );
+};
 
 // ── Magnetic cursor spotlight ──────────────────────────────────────────────
 const CursorSpotlight = () => {
@@ -182,6 +327,7 @@ const Hero = () => {
       className="relative min-h-screen flex flex-col justify-center overflow-hidden"
       style={{ background: "linear-gradient(135deg, #05061a 0%, #080b22 50%, #0d0a1f 100%)" }}
     >
+      <ScratchOffOverlay />
       <CursorSpotlight />
       <Particles />
 
@@ -381,7 +527,7 @@ const Hero = () => {
             </div>
             <RoleCycler />
             <p className="text-white/40 text-base leading-relaxed">
-              Building scalable, pixel-perfect web applications with modern technologies. 
+              Building scalable, pixel-perfect web applications with modern technologies.
               Turning complex problems into elegant, performant solutions.
             </p>
 
