@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+
 import {
   motion,
   useMotionValue,
@@ -12,9 +12,7 @@ import {
   ArrowUpRight,
   Download,
   Code2,
-  Layers,
   Zap,
-  Sparkles,
 } from "lucide-react";
 
 /* ─── Floating particles (ambient atmosphere) ─────────────────────────── */

@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, ExternalLink, ChevronUp, ChevronDown, Volume2, VolumeX } from "lucide-react";
+import { ArrowUpRight, ExternalLink, ChevronUp, ChevronDown } from "lucide-react";
 
 /* ─── Project Data ────────────────────────────────────────────────────── */
 const projects = [
@@ -113,34 +113,6 @@ const StaticNoise = () => {
     );
 };
 
-/* ─── Glitch Text Effect ──────────────────────────────────────────────── */
-const GlitchText = ({ children, className = "" }) => (
-    <span className={`relative inline-block ${className}`}>
-        <span className="relative z-10">{children}</span>
-        <span
-            className="absolute top-0 left-0 z-0 opacity-70"
-            style={{
-                color: "#ff0040",
-                clipPath: "inset(10% 0 60% 0)",
-                transform: "translate(-2px, -1px)",
-            }}
-            aria-hidden
-        >
-            {children}
-        </span>
-        <span
-            className="absolute top-0 left-0 z-0 opacity-70"
-            style={{
-                color: "#00ffff",
-                clipPath: "inset(50% 0 20% 0)",
-                transform: "translate(2px, 1px)",
-            }}
-            aria-hidden
-        >
-            {children}
-        </span>
-    </span>
-);
 
 /* ─── Floating particles ──────────────────────────────────────────────── */
 const Particles = () => {
@@ -275,7 +247,6 @@ export default function WorkSection() {
     const [channel, setChannel] = useState(0);
     const [isFlipping, setIsFlipping] = useState(false);
     const [showChannelBadge, setShowChannelBadge] = useState(false);
-    const [isHovered, setIsHovered] = useState(false);
     const badgeTimeout = useRef(null);
 
     const flipToChannel = useCallback(
@@ -307,14 +278,14 @@ export default function WorkSection() {
         flipToChannel((channel - 1 + projects.length) % projects.length);
     }, [channel, flipToChannel]);
 
-    // Autoplay — flip every 2 seconds, pause on hover or during flip
+    // Autoplay — flip every 2 seconds, pause during flip
     useEffect(() => {
-        if (isHovered || isFlipping) return;
+        if (isFlipping) return;
         const timer = setInterval(() => {
             flipToChannel((channel + 1) % projects.length);
         }, 2000);
         return () => clearInterval(timer);
-    }, [channel, isHovered, isFlipping, flipToChannel]);
+    }, [channel, isFlipping, flipToChannel]);
 
     // Keyboard navigation
     useEffect(() => {
